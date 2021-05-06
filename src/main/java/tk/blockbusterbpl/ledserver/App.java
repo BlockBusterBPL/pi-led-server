@@ -10,7 +10,8 @@ public class App
     public static void main( String[] args )
     {
         System.out.println( "Hello World!" );
-        LEDController strip = new LEDController(300);
-        strip.clear();
+        WebServer server = new WebServer();
+        //LEDController strip = new LEDController(300);
+        //strip.clear();
     }
 }

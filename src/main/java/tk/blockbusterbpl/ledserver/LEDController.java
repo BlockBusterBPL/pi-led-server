@@ -11,6 +11,11 @@ public class LEDController extends Thread {
 
     LEDController(int length) {
         WS281x led = new WS281x(12, 0, length);
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
+            public void run() {
+                led.close();
+            }
+        }));
     }
     public void clear() {
         led.allOff();
