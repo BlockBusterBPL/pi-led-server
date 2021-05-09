@@ -7,19 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
-import com.sun.net.httpserver.*;
-
-import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -38,6 +28,15 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
         server.createContext("/test", new MyHandler());
         server.createContext("/SetColor", new SetColHandler());
+        server.createContext("/GetState", new GetStateHandler());
+        server.createContext("/init", new InitHandler());
+        server.createContext("/exit", new ExitHandler());
+        server.createContext("/GetHue", new GetHueHandler());
+        server.createContext("/SetHue", new SetHueHandler());
+        server.createContext("/GetSat", new GetSatHandler());
+        server.createContext("/SetSat", new SetSatHandler());
+        server.createContext("/GetVal", new GetValHandler());
+        server.createContext("/SetVal", new SetValHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -46,6 +45,29 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "Test Response!";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class GetStateHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "";
+            LEDState state = new LEDState(0, 0, 0);
+            try {
+                state = LEDController.getLedState();
+ 
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+            // LEDState state = LEDController.getLedState();
+            // TODO Get state of LEDs
+            Gson gson = new Gson();
+            response = gson.toJson(state);
+            System.out.println(response);
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -64,10 +86,9 @@ public class WebServer {
             System.out.println(body);
             Gson gson = new Gson();
             LEDState ledstate = gson.fromJson(body, LEDState.class);
-            StringBuilder sb = new StringBuilder(100);
-            System.out.println(String.valueOf(ledstate.red));
-            System.out.println(String.valueOf(ledstate.green));
-            System.out.println(String.valueOf(ledstate.blue));
+            System.out.println("Hue: " + String.valueOf(ledstate.hue));
+            System.out.println("Sat: " + String.valueOf(ledstate.sat));
+            System.out.println("Val: " + String.valueOf(ledstate.val));
 
             String response = "Color Set";
             t.sendResponseHeaders(200, response.length());
@@ -76,6 +97,145 @@ public class WebServer {
             os.close();
         }
         
+    }
+
+    static class InitHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            try {
+                LEDController.init(300);
+            } catch (Exception e) {
+                //TODO: handle exception
+                e.printStackTrace();
+            }
+            String response = "Initialization Successful";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class ExitHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "Exiting Program";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+            System.exit(0);
+        }
+    }
+
+    static class GetHueHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "";
+            response = String.valueOf(LEDController.getLedHue());
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class SetHueHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            InputStream bis = t.getRequestBody();
+            String body = new BufferedReader(
+                new InputStreamReader(bis, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+
+            try {
+                LEDController.setLedHue(Float.valueOf(body));
+
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+                // LEDController.setLedHue(Float.valueOf(body));
+            System.out.println("Hue: " + String.valueOf(body));
+
+            String response = "Color Set";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class GetSatHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "";
+            response = String.valueOf(LEDController.getLedSat());
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class SetSatHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            InputStream bis = t.getRequestBody();
+            String body = new BufferedReader(
+                new InputStreamReader(bis, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+            try {
+                LEDController.setLedSat(Float.valueOf(body));
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+            //LEDController.setLedSat(Float.valueOf(body));
+            System.out.println("Sat: " + String.valueOf(body));
+
+            String response = "Color Set";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class GetValHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "";
+            response = String.valueOf(LEDController.getLedVal());
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class SetValHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            InputStream bis = t.getRequestBody();
+            String body = new BufferedReader(
+                new InputStreamReader(bis, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+            try {
+                LEDController.setLedVal(Float.valueOf(body));
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+            // LEDController.setLedVal(Float.valueOf(body));
+            System.out.println("Val: " + String.valueOf(body));
+
+            String response = "Color Set";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
     }
 
 }
