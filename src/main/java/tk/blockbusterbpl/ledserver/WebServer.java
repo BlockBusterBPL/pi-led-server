@@ -16,7 +16,7 @@ import com.sun.net.httpserver.HttpServer;
 
 public class WebServer {
 
-    WebServer(){
+    WebServer() {
         try {
             main();
         } catch (Exception e) {
@@ -24,6 +24,7 @@ public class WebServer {
             e.printStackTrace();
         }
     }
+
     public static void main() throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
         server.createContext("/test", new MyHandler());
@@ -59,9 +60,9 @@ public class WebServer {
             LEDState state = new LEDState(0, 0, 0);
             try {
                 state = LEDController.getLedState();
- 
+
             } catch (Exception e) {
-                //TODO: handle exception
+                // TODO: handle exception
             }
             // LEDState state = LEDController.getLedState();
             // TODO Get state of LEDs
@@ -79,10 +80,8 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             InputStream bis = t.getRequestBody();
-            String body = new BufferedReader(
-                new InputStreamReader(bis, StandardCharsets.UTF_8))
-                .lines()
-                .collect(Collectors.joining("\n"));
+            String body = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8)).lines()
+                    .collect(Collectors.joining("\n"));
             System.out.println(body);
             Gson gson = new Gson();
             LEDState ledstate = gson.fromJson(body, LEDState.class);
@@ -96,7 +95,7 @@ public class WebServer {
             os.write(response.getBytes());
             os.close();
         }
-        
+
     }
 
     static class InitHandler implements HttpHandler {
@@ -105,7 +104,7 @@ public class WebServer {
             try {
                 LEDController.init(300);
             } catch (Exception e) {
-                //TODO: handle exception
+                // TODO: handle exception
                 e.printStackTrace();
             }
             String response = "Initialization Successful";
@@ -124,6 +123,12 @@ public class WebServer {
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
             os.close();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             System.exit(0);
         }
     }
@@ -144,18 +149,16 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             InputStream bis = t.getRequestBody();
-            String body = new BufferedReader(
-                new InputStreamReader(bis, StandardCharsets.UTF_8))
-                .lines()
-                .collect(Collectors.joining("\n"));
+            String body = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8)).lines()
+                    .collect(Collectors.joining("\n"));
 
             try {
                 LEDController.setLedHue(Float.valueOf(body));
 
             } catch (Exception e) {
-                //TODO: handle exception
+                // TODO: handle exception
             }
-                // LEDController.setLedHue(Float.valueOf(body));
+            // LEDController.setLedHue(Float.valueOf(body));
             System.out.println("Hue: " + String.valueOf(body));
 
             String response = "Color Set";
@@ -182,16 +185,14 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             InputStream bis = t.getRequestBody();
-            String body = new BufferedReader(
-                new InputStreamReader(bis, StandardCharsets.UTF_8))
-                .lines()
-                .collect(Collectors.joining("\n"));
+            String body = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8)).lines()
+                    .collect(Collectors.joining("\n"));
             try {
                 LEDController.setLedSat(Float.valueOf(body));
             } catch (Exception e) {
-                //TODO: handle exception
+                // TODO: handle exception
             }
-            //LEDController.setLedSat(Float.valueOf(body));
+            // LEDController.setLedSat(Float.valueOf(body));
             System.out.println("Sat: " + String.valueOf(body));
 
             String response = "Color Set";
@@ -218,14 +219,12 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             InputStream bis = t.getRequestBody();
-            String body = new BufferedReader(
-                new InputStreamReader(bis, StandardCharsets.UTF_8))
-                .lines()
-                .collect(Collectors.joining("\n"));
+            String body = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8)).lines()
+                    .collect(Collectors.joining("\n"));
             try {
                 LEDController.setLedVal(Float.valueOf(body));
             } catch (Exception e) {
-                //TODO: handle exception
+                // TODO: handle exception
             }
             // LEDController.setLedVal(Float.valueOf(body));
             System.out.println("Val: " + String.valueOf(body));
@@ -239,5 +238,3 @@ public class WebServer {
     }
 
 }
-
-
