@@ -38,6 +38,8 @@ public class WebServer {
         server.createContext("/SetSat", new SetSatHandler());
         server.createContext("/GetVal", new GetValHandler());
         server.createContext("/SetVal", new SetValHandler());
+        server.createContext("/GetOn", new GetOnHandler());
+        server.createContext("/SetOn", new SetOnHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -45,7 +47,7 @@ public class WebServer {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            String response = "Test Response!";
+            String response = "pie";
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -101,12 +103,7 @@ public class WebServer {
     static class InitHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            try {
-                LEDController.init(300);
-            } catch (Exception e) {
-                // TODO: handle exception
-                e.printStackTrace();
-            }
+            LEDController.init(300);
             String response = "Initialization Successful";
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
@@ -230,6 +227,40 @@ public class WebServer {
             System.out.println("Val: " + String.valueOf(body));
 
             String response = "Color Set";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class GetOnHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String response = "";
+            response = String.valueOf(LEDController.getOnState());
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    static class SetOnHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            InputStream bis = t.getRequestBody();
+            String body = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8)).lines()
+                    .collect(Collectors.joining("\n"));
+            try {
+                LEDController.setOnState(Boolean.valueOf(body));
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            // LEDController.setLedVal(Float.valueOf(body));
+            System.out.println("On: " + String.valueOf(body));
+
+            String response = "On State Set";
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
