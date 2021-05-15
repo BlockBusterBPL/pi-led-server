@@ -10,18 +10,12 @@ public class LEDController extends Thread {
     static boolean isOn;
 
     public static void init(int length) {
-        try {
-
             WS281x led = new WS281x(18, 0, length);
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 public void run() {
                     led.close();
                 }
             }));
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }
     }
 
     public static void setOnState(boolean on) {
