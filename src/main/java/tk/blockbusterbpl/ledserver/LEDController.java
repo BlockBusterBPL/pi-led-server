@@ -65,9 +65,9 @@ public class LEDController extends Thread {
         float hcpt = 0; // Hue Component
         float scpt = 0; // Saturation Component
         float bcpt = 0; // Brightness Component
-        // float hsbvals[] = { (float) 0.5, (float) 0.5, (float) 0.5 };
-        float hsbvals[] = {0, 0, 0};
-        Color.RGBtoHSB( led.getRedComponent(0), led.getGreenComponent(0), led.getBlueComponent(0), hsbvals);
+        float hsbvals[] = { (float) 0.5, (float) 0.5, (float) 0.5 };
+        //float hsbvals[] = {0, 0, 0};
+        //Color.RGBtoHSB( led.getRedComponent(0), led.getGreenComponent(0), led.getBlueComponent(0), hsbvals);
         hcpt = hsbvals[0];
         scpt = hsbvals[1];
         bcpt = hsbvals[2];
