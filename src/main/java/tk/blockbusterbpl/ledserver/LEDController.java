@@ -10,18 +10,12 @@ public class LEDController extends Thread {
     static boolean isOn;
 
     public static void init(int length) {
-        try {
-
             WS281x led = new WS281x(18, 0, length);
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 public void run() {
                     led.close();
                 }
             }));
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }
     }
 
     public static void setOnState(boolean on) {
@@ -72,9 +66,9 @@ public class LEDController extends Thread {
         float hcpt = 0; // Hue Component
         float scpt = 0; // Saturation Component
         float bcpt = 0; // Brightness Component
-        // float hsbvals[] = { (float) 0.5, (float) 0.5, (float) 0.5 };
-        float hsbvals[] = {0, 0, 0};
-        Color.RGBtoHSB( led.getRedComponent(0), led.getGreenComponent(0), led.getBlueComponent(0), hsbvals);
+        float hsbvals[] = { (float) 0.5, (float) 0.5, (float) 0.5 };
+        //float hsbvals[] = {0, 0, 0};
+        //Color.RGBtoHSB( led.getRedComponent(0), led.getGreenComponent(0), led.getBlueComponent(0), hsbvals);
         hcpt = hsbvals[0];
         scpt = hsbvals[1];
         bcpt = hsbvals[2];
