@@ -39,6 +39,7 @@ public class LEDController extends Thread {
     public static void setStateOn() {
         setAllSingleStates(tempState);
         isOn = true;
+        System.out.println("State Set On");
     }
 
     public static void setStateOff() {
@@ -47,7 +48,7 @@ public class LEDController extends Thread {
         }
         isOn = false;
         clear();
-
+        System.out.println("State Set Off");
     }
 
     public static WS281x instance() {

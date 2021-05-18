@@ -134,7 +134,7 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "";
-            response = String.valueOf(LEDController.getLedHue());
+            response = String.valueOf((int) LEDController.getLedHue());
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -170,7 +170,7 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "";
-            response = String.valueOf(LEDController.getLedSat());
+            response = String.valueOf((int) LEDController.getLedSat());
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -204,7 +204,7 @@ public class WebServer {
         @Override
         public void handle(HttpExchange t) throws IOException {
             String response = "";
-            response = String.valueOf(LEDController.getLedVal());
+            response = String.valueOf((int) LEDController.getLedVal());
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
